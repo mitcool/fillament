@@ -50,11 +50,29 @@ class ProductResource extends Resource
                     ->money('usd')
                     ->getStateUsing( function (Product $record) : float{
                         return $record->price / 100;
-                    }),
-                Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\TextColumn::make('category.name'),
-                Tables\Columns\TextColumn::make('tags.name'), 
-
+                    })
+                    ->alignEnd(), 
+                    // ->alignment(Alignment::End)
+                Tables\Columns\TextColumn::make('status')
+                    ->badge() 
+                    ->colors([
+                        'warning' => static fn ($state): bool => $state === 'coming soon',
+                        'success' => static fn ($state): bool => $state === 'in stock',
+                        'danger' => static fn ($state): bool => $state === 'sold out',
+                    ]),
+                    
+                Tables\Columns\TextColumn::make('category.name')
+                    
+                    ->url(function (Product $product): string {
+                        return CategoryResource::getUrl('edit', [
+                            'record' => $product->category_id
+                        ]);
+                    })
+                    ->label('Category name'),
+                Tables\Columns\TextColumn::make('tags.name')
+                    ->badge(),
+                    Tables\Columns\TextColumn::make('created_at')
+                    ->since(),
             ])
             ->defaultSort('price','desc') 
             ->filters([
@@ -66,6 +84,7 @@ class ProductResource extends Resource
                 ->form([
                     Forms\Components\DatePicker::make('created_from'),
                 ])
+                
                 ->query(function (Builder $query, array $data): Builder {
                     return $query
                         ->when(
@@ -73,6 +92,7 @@ class ProductResource extends Resource
                             fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
                         );
                 }),
+                
             Tables\Filters\Filter::make('created_until')
                 ->form([
                     Forms\Components\DatePicker::make('created_until'),

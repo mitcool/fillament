@@ -65,6 +65,7 @@ class CategoryResource extends Resource
     {
         return [
             'index' => Pages\ManageCategories::route('/'),
+            'edit' => Pages\ManageCategories::route('/{record}/edit'),
         ];
     }
 }
