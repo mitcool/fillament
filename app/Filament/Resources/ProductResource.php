@@ -44,7 +44,10 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->sortable() ->searchable(), 
+                Tables\Columns\TextInputColumn::make('name')
+                    ->sortable() 
+                    ->searchable()
+                    ->rules(['required', 'min:3']), 
                 Tables\Columns\TextColumn::make('price')
                     ->sortable()
                     ->money('usd')
@@ -53,6 +56,8 @@ class ProductResource extends Resource
                     })
                     ->alignEnd(), 
                     // ->alignment(Alignment::End)
+                Tables\Columns\ToggleColumn::make('is_active'),
+                //Tables\Columns\CheckboxColumn::make('is_active'), 
                 Tables\Columns\TextColumn::make('status')
                     ->badge() 
                     ->colors([
